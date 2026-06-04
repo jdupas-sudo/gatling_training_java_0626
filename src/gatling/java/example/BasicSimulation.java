@@ -13,6 +13,7 @@ import static example.endpoints.WebsiteEndpoints.loginPage;
 import static example.endpoints.ApiEndpoints.session;
 import static example.endpoints.ApiEndpoints.products;
 import static example.endpoints.ApiEndpoints.login;
+import static example.endpoints.ApiEndpoints.addToCart;
 
 public class BasicSimulation extends Simulation {
 
@@ -33,11 +34,17 @@ public class BasicSimulation extends Simulation {
   // Reference: https://docs.gatling.io/reference/script/core/scenario/
   private static final ScenarioBuilder scenario = scenario("Scenario 1").exec(
     home,
-    session, 
-    products,
+    session,
     loginPage,
     feed(usersFeeder),
-    login);
+    login,
+    // Seed query-param values for the products call.
+    exec(session -> session.set("pageNumber", "0")),
+    exec(session -> session.set("searchKey", "")),
+    products,
+    // Wrap the random product picked by the check into the JSON array that cart.json expects.
+    exec(session -> session.set("CartItems", "[" + session.getString("RandomProduct") + "]")),
+    addToCart);
   // Define assertions
   // Reference: https://docs.gatling.io/reference/script/core/assertions/
   private static final Assertion assertion = global().failedRequests().count().lt(1L);
