@@ -4,18 +4,23 @@ import io.gatling.javaapi.core.Assertion;
 import io.gatling.javaapi.core.ScenarioBuilder;
 import io.gatling.javaapi.core.Simulation;
 import io.gatling.javaapi.http.HttpProtocolBuilder;
+import io.gatling.javaapi.core.FeederBuilder;
 
 import static io.gatling.javaapi.core.CoreDsl.*;
 import static io.gatling.javaapi.http.HttpDsl.http;
 import static example.endpoints.WebsiteEndpoints.home;
+import static example.endpoints.WebsiteEndpoints.loginPage;
 import static example.endpoints.ApiEndpoints.session;
 import static example.endpoints.ApiEndpoints.products;
+import static example.endpoints.ApiEndpoints.login;
 
 public class BasicSimulation extends Simulation {
 
   // Load VU count from system properties
   // Reference: https://docs.gatling.io/guides/passing-parameters/
-  private static final int vu = Integer.getInteger("vu", 1);
+  private static final int vu = Integer.getInteger("vu", 2);
+
+  private static final FeederBuilder<Object> usersFeeder = jsonFile("data/users_dev.json").circular();
 
   // Define HTTP configuration
   // Reference: https://docs.gatling.io/reference/script/protocols/http/protocol/
@@ -29,8 +34,10 @@ public class BasicSimulation extends Simulation {
   private static final ScenarioBuilder scenario = scenario("Scenario 1").exec(
     home,
     session, 
-    products);
-
+    products,
+    loginPage,
+    feed(usersFeeder),
+    login);
   // Define assertions
   // Reference: https://docs.gatling.io/reference/script/core/assertions/
   private static final Assertion assertion = global().failedRequests().count().lt(1L);
