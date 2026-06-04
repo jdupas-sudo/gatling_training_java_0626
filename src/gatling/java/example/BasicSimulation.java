@@ -7,6 +7,9 @@ import io.gatling.javaapi.http.HttpProtocolBuilder;
 
 import static io.gatling.javaapi.core.CoreDsl.*;
 import static io.gatling.javaapi.http.HttpDsl.http;
+import static example.endpoints.WebsiteEndpoints.home;
+import static example.endpoints.ApiEndpoints.session;
+import static example.endpoints.ApiEndpoints.products;
 
 public class BasicSimulation extends Simulation {
 
@@ -23,7 +26,10 @@ public class BasicSimulation extends Simulation {
 
   // Define scenario
   // Reference: https://docs.gatling.io/reference/script/core/scenario/
-  private static final ScenarioBuilder scenario = scenario("Scenario").exec(http("Session").get("/session"));
+  private static final ScenarioBuilder scenario = scenario("Scenario 1").exec(
+    home,
+    session, 
+    products);
 
   // Define assertions
   // Reference: https://docs.gatling.io/reference/script/core/assertions/
