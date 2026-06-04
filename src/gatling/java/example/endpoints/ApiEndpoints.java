@@ -11,8 +11,10 @@ import static io.gatling.javaapi.http.HttpDsl.*;
 
 
 public class ApiEndpoints {
-    public static final HttpRequestActionBuilder session = http("Session")
-    .get("/session");
+  public static final HttpRequestActionBuilder session = http("Session")
+      .get("/session")
+      .check(status().is(200))
+      .check(jmesPath("sessionId").saveAs("SessionId"));
 
     public static final HttpRequestActionBuilder products = http("Products")
     .get("/products")
@@ -35,6 +37,5 @@ public class ApiEndpoints {
       .asJson()
       .body(ElFileBody("bodies/cart.json"))
       .check(status().is(200));
-
 }   
 
